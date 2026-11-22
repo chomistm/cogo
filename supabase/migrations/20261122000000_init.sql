@@ -4,7 +4,7 @@
 -- 1 CoGo kredit = 1 €. Kredity sú účtovná kniha (credit_transactions).
 -- =====================================================================
 
-create extension if not exists postgis;
+create extension if not exists postgis with schema extensions;
 create extension if not exists pg_cron;
 
 -- ---------- ENUM typy ------------------------------------------------
