@@ -3,9 +3,9 @@ import { NotConfigured } from "@/components/NotConfigured";
 
 const LABELS: Record<string, string> = {
   welcome_bonus: "Uvítací bonus CoGo",
-  booking_hold: "Rezervácia jazdy",
+  booking_hold: "Rezervácia jazdy (blokované)",
   hold_release: "Vrátenie kreditov",
-  ride_earning: "Príjem za jazdu",
+  ride_earning: "Príjem za odvoz",
   reward_redeem: "Odmena",
   adjustment: "Úprava",
 };
@@ -13,9 +13,11 @@ const LABELS: Record<string, string> = {
 export default async function Wallet() {
   if (!supabaseConfigured) return <NotConfigured />;
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const uid = user!.id;
   const [{ data: wallet }, { data: tx }] = await Promise.all([
-    supabase.from("wallet_balances").select("balance,on_hold").maybeSingle(),
-    supabase.from("credit_transactions").select("id,amount,kind,created_at").order("created_at", { ascending: false }).limit(50),
+    supabase.from("wallet_balances").select("balance,on_hold").eq("user_id", uid).maybeSingle(),
+    supabase.from("credit_transactions").select("id,amount,kind,created_at").eq("user_id", uid).order("created_at", { ascending: false }).limit(50),
   ]);
   const fmt = (n: number) => n.toFixed(2).replace(".", ",");
   return (
