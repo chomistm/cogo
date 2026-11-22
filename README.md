@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CoGo
 
-## Getting Started
+Mestský mikro-carpooling pre Bratislavu: virtuálne zastávky, CoGo kredity (1 kr = 1 €) a garancia návratu. Pilot pre 50–100 ľudí na koridoroch Petržalka ↔ EU / Mlynské nivy / Staré Mesto a Petržalka / Centrum ↔ Mlynská dolina.
 
-First, run the development server:
+**Stack:** Next.js 15 (App Router, PWA) · Tailwind CSS · Supabase (Postgres + PostGIS, Auth, Realtime, pg_cron) · Vercel.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Rozbehnutie
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Supabase projekt (Free, región Frankfurt). V **SQL Editore** spusti `supabase/migrations/20261122000000_init.sql`.
+2. V Supabase → **Authentication → URL Configuration** nastav *Site URL* na adresu appky a pridaj `http://localhost:3000/auth/callback` aj `https://<tvoja-domena>/auth/callback` do *Redirect URLs*.
+3. Skopíruj `.env.example` do `.env.local` a doplň `NEXT_PUBLIC_SUPABASE_URL` a `NEXT_PUBLIC_SUPABASE_ANON_KEY` (Project Settings → API).
+4. `npm install` a `npm run dev`, appka beží na http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Kľúč `service_role` do repozitára ani do `NEXT_PUBLIC_*` premenných nikdy nedávaj.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Štruktúra
 
-## Learn More
+| Cesta | Čo obsahuje |
+| --- | --- |
+| `src/app/page.tsx` | Úvodná obrazovka |
+| `src/app/prihlasenie` | Prihlásenie magic linkom, odmietne freemail |
+| `src/app/auth/callback` | Výmena kódu za session |
+| `src/app/(app)/…` | Domov, Jazdy, Peňaženka, Profil so spodnou navigáciou |
+| `src/lib/supabase` | Supabase klient pre prehliadač a server |
+| `src/middleware.ts` | Obnova session, presmerovanie neprihlásených |
+| `src/app/manifest.ts` | PWA manifest (inštalácia na plochu) |
+| `supabase/migrations` | Schéma, RPC funkcie (`book_ride`, `complete_booking`, `cancel_booking`), RLS, seed zastávok |
 
-To learn more about Next.js, take a look at the following resources:
+## Ďalšie kroky
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Hľadanie jázd ±15 min a rezervácia cez `book_ride`
+- Zverejnenie jazdy šoférom a notifikácie (Realtime, Web Push)
+- Chat, priebeh jazdy, hodnotenie
+- Odmeny a garancia návratu (pg_cron)
