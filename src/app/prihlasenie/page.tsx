@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { emailProblem } from "@/lib/domains";
+import { emailProblem, isFreemail } from "@/lib/domains";
 import { Logo } from "@/components/Logo";
 
 export default function Login() {
@@ -42,14 +42,15 @@ export default function Login() {
         </div>
       ) : (
         <form onSubmit={submit} className="flex-1 flex flex-col pt-10">
-          <h1 className="font-display text-2xl font-bold">Over sa školským alebo firemným e-mailom</h1>
-          <p className="text-muted mt-1">V pilote jazdia len overení ľudia. Pošleme ti odkaz, heslo netreba.</p>
+          <h1 className="font-display text-2xl font-bold">Prihlás sa e-mailom</h1>
+          <p className="text-muted mt-1">Pošleme ti odkaz, heslo netreba. So školským alebo firemným e-mailom získaš odznak overenia, ktorý ostatní uvidia pri jazde.</p>
           <label htmlFor="name" className="mt-6 text-sm font-semibold">Meno a priezvisko</label>
           <input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="napr. Jana Nováková"
             className="mt-2 h-14 rounded-2xl border border-line bg-white px-4 outline-none focus:border-brand" />
           <label htmlFor="email" className="mt-4 text-sm font-semibold">E-mail</label>
           <input id="email" type="email" inputMode="email" autoCapitalize="none" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="meno@euba.sk"
             className="mt-2 h-14 rounded-2xl border border-line bg-white px-4 outline-none focus:border-brand" />
+          {!error && isFreemail(email) && <p className="text-sm text-muted mt-2">Bežný e-mail funguje, len tvoj profil bude bez odznaku „Overený“.</p>}
           {error && <p className="text-sm text-danger mt-2">{error}</p>}
           <div className="flex-1" />
           <button disabled={!email || state === "sending"} className="h-14 rounded-2xl bg-brand text-navy font-semibold disabled:opacity-40">

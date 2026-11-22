@@ -12,7 +12,7 @@ export default function Landing() {
         </p>
       </div>
       <Link href="/prihlasenie" className="h-14 rounded-2xl bg-brand text-navy font-semibold grid place-items-center">
-        Prihlásiť sa školským e-mailom
+        Prihlásiť sa e-mailom
       </Link>
     </main>
   );
